@@ -1,0 +1,17 @@
+--index-url https://download.pytorch.org/whl/cu126
+--extra-index-url https://nexus.dwierd.core.smiths.det/nexus/repository/pypi-proxy/simple/
+--extra-index-url https://pypi.org/simple
+--trusted-host nexus.dwierd.core.smiths.det
+--trusted-host download.pytorch.org
+--trusted-host files.pythonhosted.org
+--trusted-host pypi.org
+
+ftfy
+omegaconf
+regex
+scikit-learn
+submitit
+termcolor
+torch==2.10.0+cu126
+torchvision==0.25.0+cu126
+torchmetrics

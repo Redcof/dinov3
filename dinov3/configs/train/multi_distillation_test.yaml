@@ -8,12 +8,12 @@ multidistillation:
     config_path: dinov3/configs/train/multidist_tests/vits_p16.yaml
     ranks_range:
     - 0
-    - 4
-  - name: vitb
-    config_path: dinov3/configs/train/multidist_tests/vitb_p16.yaml
-    ranks_range:
-    - 4
-    - 8
+    - 1
+  # - name: vitb
+  #   config_path: dinov3/configs/train/multidist_tests/vitb_p16.yaml
+  #   ranks_range:
+  #   - 0
+  #   - 1
 distillation:  # teacher
   enabled: true
   full_cfg_path: dinov3/configs/train/vitl_im1k_lin834.yaml
