@@ -10,7 +10,7 @@ from typing import Any, Callable, Optional, Union
 from PIL import Image
 
 from .decoders import Decoder, DenseTargetDecoder, ImageDataDecoder
-from .extended import ExtendedVisionDataset, VisionDataset
+from .extended import VisionDataset
 
 
 class _Split(Enum):
@@ -26,14 +26,14 @@ class _Split(Enum):
         return _DATA_FNAMES[self]
 
 
-class HIF(VisionDataset):
+class PRIVATE_DATA(VisionDataset):
     Split = Union[_Split]
     Labels = Union[Image.Image]
 
     def __init__(
         self,
         *,
-        split: "HIF.Split",
+        split: "PRIVATE_DATA.Split",
         root: Optional[str] = None,
         transforms: Optional[Callable] = None,
         transform: Optional[Callable] = None,

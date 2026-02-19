@@ -8,4 +8,4 @@ from .coco_captions import CocoCaptions
 from .image_net import ImageNet
 from .image_net_22k import ImageNet22k
 from .nyu import NYU
-from .hif import HIF
+from .private_data import PRIVATE_DATA

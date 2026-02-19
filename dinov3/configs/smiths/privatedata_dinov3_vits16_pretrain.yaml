@@ -40,11 +40,11 @@ gram:
   compute_stats: false
 train:
   batch_size_per_gpu: 16
-  dataset_path: HIF:root=/data/data_tip_bag_pool_dino:split=TRAIN
+  dataset_path: PRIVATE_DATA:root=/data/data_tip_bag_pool_dino:split=TRAIN
   saveckp_freq: 20
   seed: 0
   num_workers: 10
-  OFFICIAL_EPOCH_LENGTH: 2000
+  OFFICIAL_EPOCH_LENGTH: 2
   monitor_gradient_norm: false
   chunk_schedule: []
   cache_dataset: true
