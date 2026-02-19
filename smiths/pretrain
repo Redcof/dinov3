@@ -1,0 +1,14 @@
+#!/usr/bin/bash
+
+# Start SSL pretraining
+# Configuration: dinov3/configs/dwierd/hif_dinov3_vits16_pretrain.yaml
+# 
+# Example: sh smiths/pretrain
+#
+# Author: Soumen Sardar
+# Date: 2026-02-18
+
+export PYTHONPATH="$PYTHONPATH:$(pwd)"
+# export TORCH_LOGS="+dynamo"
+# export TORCHDYNAMO_VERBOSE=1
+python -m torch.distributed.run --nproc_per_node=2 dinov3/train/train.py --config dinov3/configs/dwierd/hif_dinov3_vits16_pretrain.yaml --output-dir outputs/hif_dinov3/

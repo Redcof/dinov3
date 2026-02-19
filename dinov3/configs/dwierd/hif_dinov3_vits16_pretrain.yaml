@@ -44,7 +44,7 @@ train:
   saveckp_freq: 20
   seed: 0
   num_workers: 10
-  OFFICIAL_EPOCH_LENGTH: 2
+  OFFICIAL_EPOCH_LENGTH: 2000
   monitor_gradient_norm: false
   chunk_schedule: []
   cache_dataset: true
@@ -86,7 +86,7 @@ student:
   pos_embed_rope_jitter_coords: null
   pos_embed_rope_rescale_coords: 2
   pos_embed_rope_dtype: fp32
-  fp8_enabled: true
+  fp8_enabled: false
   fp8_filter: blocks
 teacher:
   momentum_teacher: null
