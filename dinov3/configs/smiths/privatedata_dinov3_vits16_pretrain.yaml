@@ -1,7 +1,7 @@
 MODEL:
   META_ARCHITECTURE: SSLMetaArch
   DEVICE: cuda
-  WEIGHTS: /home/icmore_acc/Downloads/pyvision_dev/pytorch_vision/dinov3_vits16plus_pretrain_lvd1689m-4057cbaa.pth
+  WEIGHTS: /home/icmore_acc/Downloads/pyvision_dev/pytorch_vision/meta_models/dinov3_vits16_pretrain_lvd1689m-08c60483.pth
   DTYPE: float32
 compute_precision:
   param_dtype: bf16
@@ -58,17 +58,17 @@ train:
   cell_augmentation: false
   cell_augmentation_type: hpa
   sharded_eval_checkpoint: true
-student:
+student: # Parameter values are copied form -> https://github.com/Redcof/dinov3/blob/main/dinov3/hub/backbones.py#L211
   arch: vit_small # <- model architecture
   patch_size: 16
-  drop_path_rate: 0.4
+  drop_path_rate: 0.0
   layerscale: 1.0e-05
   patch_drop: 0.0
-  pretrained_weights: /home/icmore_acc/Downloads/pyvision_dev/pytorch_vision/dinov3_vits16plus_pretrain_lvd1689m-4057cbaa.pth
-  ffn_layer: swiglu64
-  ffn_ratio: 3
+  pretrained_weights: /home/icmore_acc/Downloads/pyvision_dev/pytorch_vision/meta_models/dinov3_vits16_pretrain_lvd1689m-08c60483.pth
+  ffn_layer: mlp
+  ffn_ratio: 4
   resume_from_teacher_chkpt: ''
-  qkv_bias: false
+  qkv_bias: true
   proj_bias: true
   ffn_bias: true
   norm_layer: layernormbf16
@@ -145,7 +145,7 @@ crops:
   - 0.2202170044183731
   - 0.33237993717193604
 checkpointing:
-  period: 1000
+  period: 100
   max_to_keep: 3
   keep_every: 50000
 schedules:
