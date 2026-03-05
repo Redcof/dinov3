@@ -14,8 +14,34 @@ from dinov3.train.ssl_meta_arch import SSLMetaArch
 import torch
 from omegaconf import OmegaConf
 from contextlib import suppress
+import functools
 
+PADDING = 0
 
+def echo(message):
+    """Outer function: takes the parameter n and returns the actual decorator."""
+    def decorator(func):
+        """Middle function: takes the function to be decorated."""
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            """Inner function: contains the main logic, uses the parameter n."""
+            global PADDING
+            if PADDING > 0:
+                str_tab = "\t" * PADDING
+            else:
+                str_tab = ""
+            print(str_tab, message)
+            PADDING += 1
+            result = func(*args, **kwargs)
+            PADDING -= 1
+            print(str_tab, "DONE")            
+            return result
+        # Returns the wrapper function, which replaces the original function
+        return wrapper
+    # Returns the decorator function
+    return decorator
+
+@echo("Loading the model... ")
 def load_model(input_path):
     # load the config from the checkpoint directory
     cfg = read_config(input_path)
@@ -27,6 +53,7 @@ def load_model(input_path):
     model.load_state_dict(state_dict['model'], strict=True) # load checkpoint
     return model
 
+@echo("Loading checkpoint... ")
 def load_checkpoint(input_path):
     # load the checkpoint using torch.distributed.checkpoint format_utils
     pth_interm_file = distcp2pth(input_path)
@@ -34,6 +61,7 @@ def load_checkpoint(input_path):
     os.remove(pth_interm_file) # remove the intermidiate file
     return state_dict
 
+@echo("Converting distributed checkpoint to torch checkpoint... ")
 def distcp2pth(input_path):
     # create output files
     pth_interm_file = f"smiths-distcp2_intermidiate.pth"    
@@ -41,18 +69,21 @@ def distcp2pth(input_path):
     os.system(r"python -m torch.distributed.checkpoint.format_utils dcp_to_torch %s %s" % (input_path, str(pth_interm_file)))
     return str(pth_interm_file)
 
+@echo("Reading config... ")
 def read_config(input_path):
     # load the config from the checkpoint directory
     cfg_file = pathlib.Path(input_path).parents[1] / "config.yaml"
     cfg = OmegaConf.load(cfg_file)
     return cfg
 
+@echo("Removing torch hub cache... ")
 def remove_torch_hub_cache(pth_file):
     # remove the torch hub cache to avoid loading the old checkpoint
     cache_dir = torch.hub.get_dir()
     with suppress(FileNotFoundError):
         os.remove(str(pathlib.Path(cache_dir) / "checkpoints" / os.path.basename(pth_file)))
 
+@echo("Verifying the generated checkpoint... ")
 def verify_checkpoint(arch, pth_file):
     # verify the generated checkpoint by loading it and checking the keys
     remove_torch_hub_cache(pth_file)
@@ -63,25 +94,24 @@ def verify_checkpoint(arch, pth_file):
         vit_7b="dinov3_vit7b16",
     )[arch]
     
-    print(f"[Verifying...", end="")
     torch.hub.load(
         ".",
         arch_name,
         weights=str(pth_file),
         source="local",
     )
-    print(f"DONE")
-
+    
+@echo("Calculating git sha... ")
 def get_git_sha():
     # get the git sha of the current commit
     import subprocess
     try:
         sha = subprocess.check_output(["git", "rev-parse", "--short", "HEAD"]).decode("utf-8").strip()
     except Exception as e:
-        print(f"Warning: Could not get git sha. {e}")
         sha = "unknown"
     return sha
 
+@echo("Exporting DINOv3 model... ")
 def export_dinov3(input_path, output_dir):
     model = load_model(input_path)
     cfg = read_config(input_path)
