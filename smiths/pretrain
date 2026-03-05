@@ -11,4 +11,7 @@
 export PYTHONPATH="$PYTHONPATH:$(pwd)"
 # export TORCH_LOGS="+dynamo"
 # export TORCHDYNAMO_VERBOSE=1
-python -m torch.distributed.run --nproc_per_node=2 dinov3/train/train.py --config dinov3/configs/smiths/privatedata_dinov3_vits16_pretrain.yaml --output-dir outputs/privatedata_dinov3-small/
+python -m torch.distributed.run --nproc_per_node=2 dinov3/train/train.py \
+        --config dinov3/configs/smiths/privatedata_dinov3_vits16_pretrain.yaml \
+        --output-dir outputs/privatedata_dinov3-small/ \
+        --seed 1
