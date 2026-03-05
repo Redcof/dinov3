@@ -115,6 +115,7 @@ def save_checkpoint(
 
     to_save = {"iteration": iteration}
     to_save["model"] = dcpsd.get_model_state_dict(model)
+    
     if optimizer is not None:
         to_save["optimizer"] = dcpsd.get_optimizer_state_dict(model, optimizer)
     to_save.update(others)

@@ -14,8 +14,6 @@ dist/
 # Ignore swap files
 *.swp
 
-# Ignore vscode directory
-.vscode/
 
 # ignore output
 /outputs

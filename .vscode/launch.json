@@ -1,0 +1,18 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+
+        {
+            "name": "Python Debugger: Current File with Arguments",
+            "type": "debugpy",
+            "request": "launch",
+            "console": "integratedTerminal",
+            // "args": "${command:pickArgs}",
+            "program": "smiths/export_dinov3.py",
+            "args" : "outputs/privatedata_dinov3-small/ckpt/99 --output-dir /home/icmore_acc/Downloads/pyvision_dev/pytorch_vision",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}:${env:PYTHONPATH}" // Use ";" instead of ":" on Windows
+            }
+        }
+    ]
+}
