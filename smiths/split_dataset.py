@@ -9,23 +9,71 @@ import pathlib
 import shutil
 import random
 
+import argparse
+import os
+import sys
 
-SRC_DIR = pathlib.Path("/data/data_tip_bag_pool_png")
-DEST_DIR = pathlib.Path("/data/data_tip_bag_pool_dino")
-ABLATION_SIZE = 20
-train_split, val_split = (8, 2)
+def get_args():
+    parser = argparse.ArgumentParser(description="Split dataset into train(80%) and val(20%) "
+                                     "sets and create corresponding txt files for DINO")
 
-shutil.rmtree(DEST_DIR, ignore_errors=True)
-os.makedirs(DEST_DIR, exist_ok=True)
+    parser.add_argument(
+        "input_dir",
+        type=str,
+        default="/data/data_tip_bag_pool_png",
+        help="Path to the input directory"
+    )
 
-# def create_link(src, dest):
-#     # Create the symbolic link
-#     try:
-#         os.co(os.path.abspath(src), dest / os.path.basename(src))
-#     except FileExistsError:
-#         pass
+    parser.add_argument(
+        "output_dir",
+        type=str,
+        default="/data/data_tip_bag_pool_dino",
+        help="Path to the output directory"
+    )
+    
+    
+    # Split arguments
+    parser.add_argument("--train_split", type=int, default=80,
+                        help="Training split percentage (int)")
+    parser.add_argument("--val_split", type=int, default=20,
+                        help="Validation split percentage (int)")
 
-def main():
+    # Ablation argument
+    parser.add_argument("--ablation_size", type=int, default=0,
+                        help="Ablation size (int)")
+    
+
+    args = parser.parse_args()
+    
+    
+    # --- Validation ---
+    if not os.path.isdir(args.input_dir):
+        sys.exit(f"Error: {args.input_dir} is not a valid directory")
+
+    if not os.path.isdir(args.output_dir):
+        sys.exit(f"Error: {args.output_dir} is not a valid directory")
+
+    if args.train_split + args.val_split != 100:
+        sys.exit("Error: train_split + val_split must equal 100")
+
+    if args.train_split < 0 or args.val_split < 0 or args.ablation_size < 0:
+        sys.exit("Error: all numeric arguments must be non-negative")
+
+    return args
+
+
+def main():    
+    args = get_args()
+
+    SRC_DIR = pathlib.Path(args.input_dir)
+    DEST_DIR = pathlib.Path(args.output_dir)
+    ABLATION_SIZE = args.ablation_size
+    train_split, val_split = (args.train_split / 10, args.val_split / 10)
+
+    print(f"Cleaning Destination directory: {DEST_DIR}")
+    shutil.rmtree(DEST_DIR, ignore_errors=True)
+    os.makedirs(DEST_DIR, exist_ok=True)
+
     # collect labels
     labels = os.listdir(SRC_DIR)
     for lbl in labels:
@@ -35,31 +83,21 @@ def main():
         
         # shuffle randomly
         random.seed(1)
-        random.shuffle(items)
-        
-        # # create split-dirs
-        # train_dir = pathlib.Path(DEST_DIR) / "train"/ lbl
-        # val_dir = pathlib.Path(DEST_DIR) / "val"/ lbl
-        # os.makedirs(train_dir, exist_ok=True)
-        # os.makedirs(val_dir, exist_ok=True)
-        
+        random.shuffle(items)        
+       
         # create split sizes
         l = len(items)
         print("Image (label : count):",lbl,":", l)
         train_size = int(l * (train_split / 10))
         
         # create split list
-        train_items = items[ : train_size][:ABLATION_SIZE]
-        val_items = items[train_size : ][:ABLATION_SIZE]
+        train_items = items[ : train_size]
+        val_items = items[train_size : ]
         
-        if ABLATION_SIZE > 1:
+        if ABLATION_SIZE > 0:
             train_items = items[:ABLATION_SIZE]
             val_items = items[:ABLATION_SIZE]
         
-        # # create links for split items
-        # for collection, dest in zip((train_items, val_items), (train_dir, val_dir)):
-        #     for file in collection:
-        #         create_link(file, dest)
         
         # create train.txt & val.txt
         for collection_file, collection in zip(("train.txt", "val.txt"), (train_items, val_items)):
